@@ -8,12 +8,17 @@ from lexer import *
 from tokens import *
 import glob, os
 
+def get_line_generator_from_file(filename):
+    fh = open(filename, 'r')
+    for line in iter(fh):
+		yield line
+    fh.close()
+
 folders = [file for file in glob.glob("*") if file[-3:] != ".py"]
 for num, folder in enumerate(folders):
 	try:
 		print("\ntest nr " + str(num + 1) + ": " + str(folder))
-		file = open(str(folder) + "/in")
-		lexer = Lexer(file)
+		lexer = Lexer(get_line_generator_from_file(str(folder) + "/in"))
 		tokens = []
 		while True:
 			tokens.append(lexer.calc_single_token())

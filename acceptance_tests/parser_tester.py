@@ -33,18 +33,15 @@ for num, folder in enumerate(folders):
 		parser = Parser(lexer, iostreamMock)
 		parser.execute_main()
 		parser_out = iostreamMock.bufor
-		f =  open(str(folder) + "/parser_out", "w")
-		f.write(parser_out)
-		f.close()
-		# with open((str(folder) + "/parser_out")) as f:
-		# 	desired_output = f.read()
-		# if parser_out == desired_output:
-		# 	print("    OK")
-		# else:
-		# 	filename = str(folder) + "/parser_out_fail"
-		# 	with open(filename,"w") as out_file:
-		# 		out_file.write(lexer_out)
-		# 	print("    FAILED: output differs from desired")
-		# 	print("    output written in: " + filename)
+		with open((str(folder) + "/parser_out")) as f:
+			desired_output = f.read()
+		if parser_out == desired_output:
+			print("    OK")
+		else:
+			filename = str(folder) + "/parser_out_fail"
+			with open(filename,"w") as out_file:
+				out_file.write(parser_out)
+			print("    FAILED: output differs from desired")
+			print("    output written in: " + filename)
 	except IOError:
 		print("   FAILED: files not found")
