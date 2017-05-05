@@ -1,0 +1,8 @@
+returning true 
+true 
+returning true 
+a && retTrue() 
+returning true 
+a || retTrue() 
+returning true 
+!a && retTrue() - false 
