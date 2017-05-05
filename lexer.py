@@ -5,6 +5,32 @@ class Lexer:
 		self.programString = programString
 		self.charPointer = 0
 
+
+	def currChar(self):
+		return self.programString[self.charPointer]
+
+	def incPointer(self):
+		self.charPointer = self.charPointer + 1
+
+	def decPointer(self):
+		self.charPointer = self.charPointer - 1
+
+	def previousChar(self):
+		return self.programString[self.charPointer - 1]
+
+	def incPointerAndGetCurrChar(self):
+		self.incPointer()
+		return self.currChar()
+
+	def isPointerOutOfRange(self):
+		return self.charPointer > len(self.programString) - 1 or self.currChar() is None
+	
+	def getCharAtOffset(self, offset):
+		return self.programString[self.charPointer + offset]
+
+	def getSubstringToOffset(self, offset):
+		return ''.join(self.programString[self.charPointer:self.charPointer + offset])
+
 	"""
 		convention: currChar() points at first un-read sign
 	"""
@@ -77,7 +103,7 @@ class Lexer:
 		literal = []
 		self.incPointer() #swallow '"'
 		while True:
-			if self.currChar() == '"' and self.programString[self.charPointer - 1] != '\\': # check also if " was escaped inside quotation
+			if self.currChar() == '"' and self.previousChar() != '\\': # check also if " was escaped inside quotation
 				break
 			literal.append(self.currChar())
 			self.incPointer()
@@ -87,30 +113,31 @@ class Lexer:
 	def checkForRestLiterals(self):
 		separators = ('[',']', ':', ';', ' ', ',' ,'.', '(', ')','!', '+', '-', '*', '/', '%', '&', '|', '\n','{','}','<','>','=')
 		offset = 0
-		while self.charPointer + offset < len(self.programString):
-			if self.programString[self.charPointer + offset] in separators:
+		while self.getCharAtOffset(offset) is not None:
+			if self.getCharAtOffset(offset) in separators:
 				if offset == 0: # first character is a separator: possible tokens e.g. <=, ==, && or any 1 char token
 					# first: try to get longest token
-					token = TokenType.getMatchingElseNone(''.join(self.programString[self.charPointer:self.charPointer + 2])) 
+					token = TokenType.getMatchingElseNone(self.getSubstringToOffset(2)) 
 					if token is not None:
 						self.charPointer += 2
 						return Token(token, token.value, self.charPointer)
 					 # second: if that fails, try shorter token
-					token = TokenType.getMatchingElseNone(''.join(self.programString[self.charPointer]))
+					token = TokenType.getMatchingElseNone(self.getCharAtOffset(offset))
 					if token is not None:
 						self.charPointer += 1
 						return Token(token, token.value, self.charPointer)
 					else:
 						raise Exception # TODO - add some apropriate exception
 				else: # token is identifier or mnemonic token(if,else,return), and cannot be token like <, ==, && etc\
-					token = TokenType.getMatchingElseNone(''.join(self.programString[self.charPointer:self.charPointer + offset]))
+					token = TokenType.getMatchingElseNone(self.getSubstringToOffset(offset))
 					if token is not None:
 						self.charPointer += offset
 						return Token(token, token.value, self.charPointer)
 					else:
-						arg = self.charPointer
+						to_return = Token(TokenType.IDENTIFIER, self.getSubstringToOffset(offset), self.charPointer + offset)
 						self.charPointer += offset
-						return Token(TokenType.IDENTIFIER, ''.join(self.programString[arg:arg + offset]), self.charPointer)
+						return to_return
+
 			else:
 				offset += 1
 
@@ -147,21 +174,7 @@ class Lexer:
 			self.incPointer()
 		self.ommitAnyComments()
 
-	def currChar(self):
-		return self.programString[self.charPointer]
-
-	def incPointer(self):
-		self.charPointer = self.charPointer + 1
-
-	def decPointer(self):
-		self.charPointer = self.charPointer - 1
-
-	def incPointerAndGetCurrChar(self):
-		self.incPointer()
-		return self.currChar()
-
-	def isPointerOutOfRange(self):
-		return self.charPointer > len(self.programString) - 1 or self.currChar() is None
+	
 
 class LexerException(Exception):
 	def __init__(self, token, message, trace = None):

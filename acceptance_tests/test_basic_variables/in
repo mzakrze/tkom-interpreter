@@ -15,7 +15,7 @@ def main(){
     print(b);
     print(" - " + c + " - ");
     print(d + 0.5); 
-    //print("hello \" world \"");
+    print("hello \" world \"");
 
     // out:
     // "11 truefalse - hello world - 3.64"
