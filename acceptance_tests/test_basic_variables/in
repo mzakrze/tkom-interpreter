@@ -1,0 +1,22 @@
+def main(){
+    // to powinno nie wybuchnac
+    /*
+    to tez / * 
+    */
+    var a: int = 1;
+    var b: boolean = true;
+    var c: string = "hello world";
+    var d: double = 3.14;
+
+    print(a); 
+    print(a + " ") ;
+    print(b);
+    b = !b;
+    print(b);
+    print(" - " + c + " - ");
+    print(d + 0.5); 
+    //print("hello \" world \"");
+
+    // out:
+    // "11 truefalse - hello world - 3.64"
+}

@@ -1,0 +1,30 @@
+def main(){
+    
+    if(retTrue()){
+        print("true ");
+    }
+
+    var a: boolean = true;
+
+    if(a && retTrue()){
+        print("a && retTrue() ");
+    }
+
+    if(a || retTrue()){
+        print("a || retTrue() ");
+    }else{
+        print("a || retTrue() - false ");
+    }
+
+    a = false;
+
+    if(a && retTrue())
+        print("!a && retTrue() ");
+    else
+        print("!a && retTrue() - false ");
+}
+
+def retTrue(): boolean {
+    print("returning true ");
+    return true;
+}

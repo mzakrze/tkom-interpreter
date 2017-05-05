@@ -1,0 +1,356 @@
+3:   "def"                         DEF
+8:   "main"                        IDENTIFIER
+9:   "("                           LEFT_PARENTH
+10:  ")"                           RIGHT_PARENTH
+11:  "{"                           LEFT_BRACET
+19:  "var"                         VAR
+21:  "a"                           IDENTIFIER
+22:  ":"                           COLON
+26:  "int"                         INT
+28:  "="                           EQ
+30:  "2"                           NUM_LITERAL_INT
+31:  ";"                           SEMICOLON
+39:  "var"                         VAR
+41:  "b"                           IDENTIFIER
+42:  ":"                           COLON
+46:  "int"                         INT
+48:  "="                           EQ
+50:  "3"                           NUM_LITERAL_INT
+51:  ";"                           SEMICOLON
+59:  "var"                         VAR
+61:  "c"                           IDENTIFIER
+62:  ":"                           COLON
+66:  "int"                         INT
+68:  "="                           EQ
+70:  "4"                           NUM_LITERAL_INT
+71:  ";"                           SEMICOLON
+81:  "print"                       IDENTIFIER
+82:  "("                           LEFT_PARENTH
+83:  "("                           LEFT_PARENTH
+84:  "a"                           IDENTIFIER
+86:  "+"                           PLUS
+88:  "b"                           IDENTIFIER
+89:  ")"                           RIGHT_PARENTH
+91:  "*"                           ASTERISK
+93:  "c"                           IDENTIFIER
+94:  ")"                           RIGHT_PARENTH
+95:  ";"                           SEMICOLON
+105: "print"                       IDENTIFIER
+106: "("                           LEFT_PARENTH
+107: "a"                           IDENTIFIER
+109: "+"                           PLUS
+111: "b"                           IDENTIFIER
+113: "*"                           ASTERISK
+115: "c"                           IDENTIFIER
+116: ")"                           RIGHT_PARENTH
+117: ";"                           SEMICOLON
+127: "print"                       IDENTIFIER
+128: "("                           LEFT_PARENTH
+129: "a"                           IDENTIFIER
+131: "*"                           ASTERISK
+133: "b"                           IDENTIFIER
+135: "+"                           PLUS
+137: "c"                           IDENTIFIER
+138: ")"                           RIGHT_PARENTH
+139: ";"                           SEMICOLON
+149: "print"                       IDENTIFIER
+150: "("                           LEFT_PARENTH
+151: "a"                           IDENTIFIER
+153: "/"                           SLASH
+155: "b"                           IDENTIFIER
+157: "+"                           PLUS
+159: "c"                           IDENTIFIER
+160: ")"                           RIGHT_PARENTH
+161: ";"                           SEMICOLON
+171: "print"                       IDENTIFIER
+172: "("                           LEFT_PARENTH
+173: "a"                           IDENTIFIER
+175: "+"                           PLUS
+177: "b"                           IDENTIFIER
+179: "-"                           MINUS
+181: "c"                           IDENTIFIER
+182: ")"                           RIGHT_PARENTH
+183: ";"                           SEMICOLON
+192: "var"                         VAR
+199: "myTrue"                      IDENTIFIER
+200: ":"                           COLON
+208: "boolean"                     BOOLEAN
+210: "="                           EQ
+215: "true"                        TRUE
+216: ";"                           SEMICOLON
+224: "var"                         VAR
+232: "myFalse"                     IDENTIFIER
+233: ":"                           COLON
+241: "boolean"                     BOOLEAN
+243: "="                           EQ
+249: "false"                       FALSE
+250: ";"                           SEMICOLON
+259: "var"                         VAR
+262: "ok"                          IDENTIFIER
+263: ":"                           COLON
+270: "string"                      STRING
+272: "="                           EQ
+277: "ok"                          STRING_LITERAL
+278: ";"                           SEMICOLON
+286: "var"                         VAR
+293: "not_ok"                      IDENTIFIER
+294: ":"                           COLON
+301: "string"                      STRING
+303: "="                           EQ
+312: "NOT OK"                      STRING_LITERAL
+313: ";"                           SEMICOLON
+321: "if"                          IF
+322: "("                           LEFT_PARENTH
+327: "false"                       FALSE
+328: ")"                           RIGHT_PARENTH
+329: "{"                           LEFT_BRACET
+343: "print"                       IDENTIFIER
+344: "("                           LEFT_PARENTH
+350: "not_ok"                      IDENTIFIER
+351: ")"                           RIGHT_PARENTH
+352: ";"                           SEMICOLON
+358: "}"                           RIGHT_BRACET
+362: "else"                        ELSE
+363: "{"                           LEFT_BRACET
+377: "print"                       IDENTIFIER
+378: "("                           LEFT_PARENTH
+380: "ok"                          IDENTIFIER
+381: ")"                           RIGHT_PARENTH
+382: ";"                           SEMICOLON
+388: "}"                           RIGHT_BRACET
+396: "if"                          IF
+397: "("                           LEFT_PARENTH
+403: "myTrue"                      IDENTIFIER
+404: ")"                           RIGHT_PARENTH
+405: "{"                           LEFT_BRACET
+419: "print"                       IDENTIFIER
+420: "("                           LEFT_PARENTH
+422: "ok"                          IDENTIFIER
+423: ")"                           RIGHT_PARENTH
+424: ";"                           SEMICOLON
+430: "}"                           RIGHT_BRACET
+435: "else"                        ELSE
+436: "{"                           LEFT_BRACET
+450: "print"                       IDENTIFIER
+451: "("                           LEFT_PARENTH
+457: "not_ok"                      IDENTIFIER
+458: ")"                           RIGHT_PARENTH
+459: ";"                           SEMICOLON
+465: "}"                           RIGHT_BRACET
+473: "if"                          IF
+474: "("                           LEFT_PARENTH
+481: "myFalse"                     IDENTIFIER
+482: ")"                           RIGHT_PARENTH
+483: "{"                           LEFT_BRACET
+497: "print"                       IDENTIFIER
+498: "("                           LEFT_PARENTH
+504: "not_ok"                      IDENTIFIER
+505: ")"                           RIGHT_PARENTH
+506: ";"                           SEMICOLON
+512: "}"                           RIGHT_BRACET
+517: "else"                        ELSE
+518: "{"                           LEFT_BRACET
+532: "print"                       IDENTIFIER
+533: "("                           LEFT_PARENTH
+535: "ok"                          IDENTIFIER
+536: ")"                           RIGHT_PARENTH
+537: ";"                           SEMICOLON
+543: "}"                           RIGHT_BRACET
+551: "if"                          IF
+552: "("                           LEFT_PARENTH
+559: "myFalse"                     IDENTIFIER
+562: "||"                          OR
+569: "myTrue"                      IDENTIFIER
+570: ")"                           RIGHT_PARENTH
+571: "{"                           LEFT_BRACET
+585: "print"                       IDENTIFIER
+586: "("                           LEFT_PARENTH
+588: "ok"                          IDENTIFIER
+589: ")"                           RIGHT_PARENTH
+590: ";"                           SEMICOLON
+596: "}"                           RIGHT_BRACET
+601: "else"                        ELSE
+602: "{"                           LEFT_BRACET
+616: "print"                       IDENTIFIER
+617: "("                           LEFT_PARENTH
+623: "not_ok"                      IDENTIFIER
+624: ")"                           RIGHT_PARENTH
+625: ";"                           SEMICOLON
+631: "}"                           RIGHT_BRACET
+639: "if"                          IF
+640: "("                           LEFT_PARENTH
+646: "myTrue"                      IDENTIFIER
+649: "||"                          OR
+657: "myFalse"                     IDENTIFIER
+658: ")"                           RIGHT_PARENTH
+659: "{"                           LEFT_BRACET
+673: "print"                       IDENTIFIER
+674: "("                           LEFT_PARENTH
+676: "ok"                          IDENTIFIER
+677: ")"                           RIGHT_PARENTH
+678: ";"                           SEMICOLON
+684: "}"                           RIGHT_BRACET
+689: "else"                        ELSE
+690: "{"                           LEFT_BRACET
+704: "print"                       IDENTIFIER
+705: "("                           LEFT_PARENTH
+711: "not_ok"                      IDENTIFIER
+712: ")"                           RIGHT_PARENTH
+713: ";"                           SEMICOLON
+719: "}"                           RIGHT_BRACET
+727: "if"                          IF
+728: "("                           LEFT_PARENTH
+734: "myTrue"                      IDENTIFIER
+737: "&&"                          AND
+745: "myFalse"                     IDENTIFIER
+746: ")"                           RIGHT_PARENTH
+747: "{"                           LEFT_BRACET
+761: "print"                       IDENTIFIER
+762: "("                           LEFT_PARENTH
+768: "not_ok"                      IDENTIFIER
+769: ")"                           RIGHT_PARENTH
+770: ";"                           SEMICOLON
+776: "}"                           RIGHT_BRACET
+781: "else"                        ELSE
+782: "{"                           LEFT_BRACET
+796: "print"                       IDENTIFIER
+797: "("                           LEFT_PARENTH
+799: "ok"                          IDENTIFIER
+800: ")"                           RIGHT_PARENTH
+801: ";"                           SEMICOLON
+807: "}"                           RIGHT_BRACET
+815: "if"                          IF
+816: "("                           LEFT_PARENTH
+823: "myFalse"                     IDENTIFIER
+826: "&&"                          AND
+833: "myTrue"                      IDENTIFIER
+834: ")"                           RIGHT_PARENTH
+835: "{"                           LEFT_BRACET
+849: "print"                       IDENTIFIER
+850: "("                           LEFT_PARENTH
+856: "not_ok"                      IDENTIFIER
+857: ")"                           RIGHT_PARENTH
+858: ";"                           SEMICOLON
+864: "}"                           RIGHT_BRACET
+869: "else"                        ELSE
+870: "{"                           LEFT_BRACET
+884: "print"                       IDENTIFIER
+885: "("                           LEFT_PARENTH
+887: "ok"                          IDENTIFIER
+888: ")"                           RIGHT_PARENTH
+889: ";"                           SEMICOLON
+895: "}"                           RIGHT_BRACET
+903: "if"                          IF
+904: "("                           LEFT_PARENTH
+905: "2"                           NUM_LITERAL_INT
+907: "<"                           LESS
+909: "3"                           NUM_LITERAL_INT
+910: ")"                           RIGHT_PARENTH
+911: "{"                           LEFT_BRACET
+925: "print"                       IDENTIFIER
+926: "("                           LEFT_PARENTH
+928: "ok"                          IDENTIFIER
+929: ")"                           RIGHT_PARENTH
+930: ";"                           SEMICOLON
+936: "}"                           RIGHT_BRACET
+941: "else"                        ELSE
+942: "{"                           LEFT_BRACET
+956: "print"                       IDENTIFIER
+957: "("                           LEFT_PARENTH
+963: "not_ok"                      IDENTIFIER
+964: ")"                           RIGHT_PARENTH
+965: ";"                           SEMICOLON
+971: "}"                           RIGHT_BRACET
+983: "if"                          IF
+984: "("                           LEFT_PARENTH
+991: "myFalse"                     IDENTIFIER
+994: "&&"                          AND
+996: "2"                           NUM_LITERAL_INT
+998: "<"                           LESS
+1000:"3"                           NUM_LITERAL_INT
+1001:")"                           RIGHT_PARENTH
+1002:"{"                           LEFT_BRACET
+1016:"print"                       IDENTIFIER
+1017:"("                           LEFT_PARENTH
+1023:"not_ok"                      IDENTIFIER
+1024:")"                           RIGHT_PARENTH
+1025:";"                           SEMICOLON
+1031:"}"                           RIGHT_BRACET
+1036:"else"                        ELSE
+1037:"{"                           LEFT_BRACET
+1051:"print"                       IDENTIFIER
+1052:"("                           LEFT_PARENTH
+1054:"ok"                          IDENTIFIER
+1055:")"                           RIGHT_PARENTH
+1056:";"                           SEMICOLON
+1062:"}"                           RIGHT_BRACET
+1070:"if"                          IF
+1071:"("                           LEFT_PARENTH
+1072:"2"                           NUM_LITERAL_INT
+1074:"<"                           LESS
+1076:"3"                           NUM_LITERAL_INT
+1079:"&&"                          AND
+1086:"myTrue"                      IDENTIFIER
+1087:")"                           RIGHT_PARENTH
+1088:"{"                           LEFT_BRACET
+1102:"print"                       IDENTIFIER
+1103:"("                           LEFT_PARENTH
+1105:"ok"                          IDENTIFIER
+1106:")"                           RIGHT_PARENTH
+1107:";"                           SEMICOLON
+1113:"}"                           RIGHT_BRACET
+1118:"else"                        ELSE
+1119:"{"                           LEFT_BRACET
+1133:"print"                       IDENTIFIER
+1134:"("                           LEFT_PARENTH
+1140:"not_ok"                      IDENTIFIER
+1141:")"                           RIGHT_PARENTH
+1142:";"                           SEMICOLON
+1148:"}"                           RIGHT_BRACET
+1156:"if"                          IF
+1157:"("                           LEFT_PARENTH
+1158:"2"                           NUM_LITERAL_INT
+1160:"<"                           LESS
+1162:"3"                           NUM_LITERAL_INT
+1165:"||"                          OR
+1173:"myFalse"                     IDENTIFIER
+1174:")"                           RIGHT_PARENTH
+1175:"{"                           LEFT_BRACET
+1189:"print"                       IDENTIFIER
+1190:"("                           LEFT_PARENTH
+1192:"ok"                          IDENTIFIER
+1193:")"                           RIGHT_PARENTH
+1194:";"                           SEMICOLON
+1200:"}"                           RIGHT_BRACET
+1205:"else"                        ELSE
+1206:"{"                           LEFT_BRACET
+1220:"print"                       IDENTIFIER
+1221:"("                           LEFT_PARENTH
+1227:"not_ok"                      IDENTIFIER
+1228:")"                           RIGHT_PARENTH
+1229:";"                           SEMICOLON
+1235:"}"                           RIGHT_BRACET
+1243:"if"                          IF
+1244:"("                           LEFT_PARENTH
+1245:"2"                           NUM_LITERAL_INT
+1247:">"                           GREATER
+1249:"3"                           NUM_LITERAL_INT
+1252:"||"                          OR
+1259:"myTrue"                      IDENTIFIER
+1260:")"                           RIGHT_PARENTH
+1261:"{"                           LEFT_BRACET
+1275:"print"                       IDENTIFIER
+1276:"("                           LEFT_PARENTH
+1278:"ok"                          IDENTIFIER
+1279:")"                           RIGHT_PARENTH
+1280:";"                           SEMICOLON
+1286:"}"                           RIGHT_BRACET
+1291:"else"                        ELSE
+1292:"{"                           LEFT_BRACET
+1306:"print"                       IDENTIFIER
+1307:"("                           LEFT_PARENTH
+1313:"not_ok"                      IDENTIFIER
+1314:")"                           RIGHT_PARENTH
+1315:";"                           SEMICOLON
+1321:"}"                           RIGHT_BRACET
+1324:"}"                           RIGHT_BRACET

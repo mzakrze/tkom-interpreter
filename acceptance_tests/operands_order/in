@@ -1,0 +1,88 @@
+def main(){
+    var a: int = 2;
+    var b: int = 3;
+    var c: int = 4;
+    print((a + b) * c);
+    print(a + b * c);
+    print(a * b + c);
+    print(a / b + c);
+    print(a + b - c);
+
+    var myTrue: boolean = true;
+    var myFalse: boolean = false;
+
+    var ok: string = "ok";
+    var not_ok: string = "NOT OK";
+
+    if(false){
+        print(not_ok);
+    }else{
+        print(ok);
+    }
+
+    if(myTrue){
+        print(ok);
+    } else{
+        print(not_ok);
+    }
+
+    if(myFalse){
+        print(not_ok);
+    } else{
+        print(ok);
+    }
+
+    if(myFalse || myTrue){
+        print(ok);
+    } else{
+        print(not_ok);
+    }
+
+    if(myTrue || myFalse){
+        print(ok);
+    } else{
+        print(not_ok);
+    }
+
+    if(myTrue && myFalse){
+        print(not_ok);
+    } else{
+        print(ok);
+    }
+
+    if(myFalse && myTrue){
+        print(not_ok);
+    } else{
+        print(ok);
+    }
+
+    if(2 < 3){
+        print(ok);
+    } else{
+        print(not_ok);
+    }
+    
+    if(myFalse && 2 < 3){
+        print(not_ok);
+    } else{
+        print(ok);
+    }
+
+    if(2 < 3 && myTrue){
+        print(ok);
+    } else{
+        print(not_ok);
+    }
+
+    if(2 < 3 || myFalse){
+        print(ok);
+    } else{
+        print(not_ok);
+    }
+
+    if(2 > 3 || myTrue){
+        print(ok);
+    } else{
+        print(not_ok);
+    }
+}

@@ -1,0 +1,7 @@
+def main(){
+	var a: int = 4;
+	while(a>-4){
+		print("a="+a);
+		a-=1;
+	}
+}

@@ -1,0 +1,39 @@
+def main(){
+	var some: int = 4;
+    if(some == 5)
+        print("some = 4");
+    else
+        print("some != 4");
+    print(some);
+    var a: int = myFun();
+    a = 5 + 3 * myFun();
+    {
+        print(a);
+        var a: int = 5;
+        print(a);
+    }
+    print(a);
+    print("mullby3: ");
+    if(4 < 5)
+        print("4 mniejsze od 5");
+    else{
+        print("4 wieksze od 5");
+    }
+    print(test2(5) + " ");
+}
+
+def myFun(): int {
+    return 4;
+}
+
+def mullBy3(a: int): int {
+    return 3 * a;
+}
+
+def test2(a: int): int {
+    return test3(a - 2) + test3(a - 2);
+}
+
+def test3(a: int): int {
+    return a;
+}

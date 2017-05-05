@@ -1,0 +1,31 @@
+def main(){
+    var myMoveable1: moveable = [[0,0],[1,1],[0,0]];
+    
+    moveable.globalTime = 0;
+    moveable.globalTime += 1;
+    print(myMoveable1);
+
+    var myMoveable2: moveable = [[10,0],[-1,0],[0,0]];
+    var myMoveable3: moveable = [[0,0],[1,0],[0,0]];
+    moveable.setOnCollision(myMoveable2, myMoveable3, myFun);
+
+    moveable.globalTime += 3;
+    print("wait for it");
+
+    moveable.globalTime += 26;
+    print("after collision");
+
+    print(myMoveable2);
+
+    // out:
+    /*
+    [[1,1],[1,1][0,0]]
+    wait for it
+    zderzenie obiektow, w miejscu [5,0], w czasie: 6
+    after collision
+    */
+}
+
+def myFun(mov1: moveable, mov2: moveable, pos: position, time: int) {
+    print("zderzenie obiektow, w miejscu:" + pos + ", w czasie: " + time);
+}
