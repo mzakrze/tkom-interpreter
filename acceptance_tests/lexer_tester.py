@@ -12,8 +12,8 @@ folders = [file for file in glob.glob("*") if file[-3:] != ".py"]
 for num, folder in enumerate(folders):
 	try:
 		print("\ntest nr " + str(num + 1) + ": " + str(folder))
-		with open(str(folder) + "/in") as f:
-			lexer = Lexer(f.read())
+		file = open(str(folder) + "/in")
+		lexer = Lexer(file)
 		tokens = []
 		while True:
 			tokens.append(lexer.calc_single_token())

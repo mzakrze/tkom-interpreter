@@ -26,5 +26,4 @@ def main(){
 
 def retTrue(): boolean {
     print("returning true ");
-    return true;
-}
+    return true; }

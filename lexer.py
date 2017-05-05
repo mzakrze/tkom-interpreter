@@ -1,35 +1,74 @@
 from tokens import *
+import os
 
 class Lexer:
-	def __init__(self, programString):
-		self.programString = programString
+	def __init__(self, openFile):
+		self.openFile = openFile
 		self.charPointer = 0
-
+		self.decLine = False
+		self.currentLine = openFile.next()
+		self.previousLine = ""
+		self.lineCounter = 1
+		self.is_eof = False
 
 	def currChar(self):
-		return self.programString[self.charPointer]
+		if self.is_eof:
+			return None
+		if self.decLine:
+			return self.previousLine[self.charPointer]
+		else:
+			return self.currentLine[self.charPointer]
 
 	def incPointer(self):
-		self.charPointer = self.charPointer + 1
+		if self.decLine:
+			if self.charPointer < len(self.previousLine) - 1:
+				self.charPointer += 1
+			else:
+				self.decLine = False
+				self.charPointer = 0
+		else:
+			if self.charPointer < len(self.currentLine) - 1:
+				self.charPointer += 1
+			else:
+				self.previousLine = self.currentLine
+				try:
+					self.currentLine = self.openFile.next() + "\n"
+				except StopIteration:
+					self.is_eof = True
+				self.lineCounter += 1
+				self.charPointer = 0
 
 	def decPointer(self):
-		self.charPointer = self.charPointer - 1
+		if self.decLine:
+			raise Exception
+		if self.charPointer > 0:
+			self.charPointer -= 1
+		else:
+			self.decLine = True
+			self.charPointer = len(self.previousLine) - 1
 
 	def previousChar(self):
-		return self.programString[self.charPointer - 1]
+		if self.decLine:
+			raise Exception
+		if self.charPointer == 0:
+			return self.previousLine[-1]
+		else:
+			return self.currentLine[self.charPointer - 1]
 
 	def incPointerAndGetCurrChar(self):
 		self.incPointer()
 		return self.currChar()
 
 	def isPointerOutOfRange(self):
-		return self.charPointer > len(self.programString) - 1 or self.currChar() is None
+		return self.is_eof
 	
 	def getCharAtOffset(self, offset):
-		return self.programString[self.charPointer + offset]
+		if self.decLine:
+			raise Exception
+		return self.currentLine[self.charPointer + offset]
 
 	def getSubstringToOffset(self, offset):
-		return ''.join(self.programString[self.charPointer:self.charPointer + offset])
+		return self.currentLine[self.charPointer:self.charPointer + offset]
 
 	"""
 		convention: currChar() points at first un-read sign
@@ -82,13 +121,13 @@ class Lexer:
 				self.incPointer()
 			elif self.currChar() in separators: 
 				if had_dot:
-					return Token(TokenType.NUM_LITERAL_DOUBLE, is_positive * float(''.join(literal)), self.charPointer)
+					return Token(TokenType.NUM_LITERAL_DOUBLE, is_positive * float(''.join(literal)), self.lineCounter)
 				else:
-					return Token(TokenType.NUM_LITERAL_INT, is_positive * int(''.join(literal)), self.charPointer)
+					return Token(TokenType.NUM_LITERAL_INT, is_positive * int(''.join(literal)), self.lineCounter)
 			elif self.currChar().isalpha():
 				while True:
 					if self.currChar() in separators:
-						token = Token(TokenType.ILLEGAL_TOKEN, ''.join(literal), self.charPointer)
+						token = Token(TokenType.ILLEGAL_TOKEN, ''.join(literal), self.lineCounter)
 						raise Exception
 						raise LexerException(token, "Cannot resolve symbol: ")
 					else:
@@ -108,7 +147,7 @@ class Lexer:
 			literal.append(self.currChar())
 			self.incPointer()
 		self.incPointer() # swallow '"'
-		return Token(TokenType.STRING_LITERAL, ''.join(literal), self.charPointer) 
+		return Token(TokenType.STRING_LITERAL, ''.join(literal), self.lineCounter) 
 
 	def checkForRestLiterals(self):
 		separators = ('[',']', ':', ';', ' ', ',' ,'.', '(', ')','!', '+', '-', '*', '/', '%', '&', '|', '\n','{','}','<','>','=')
@@ -120,21 +159,21 @@ class Lexer:
 					token = TokenType.getMatchingElseNone(self.getSubstringToOffset(2)) 
 					if token is not None:
 						self.charPointer += 2
-						return Token(token, token.value, self.charPointer)
+						return Token(token, token.value, self.lineCounter)
 					 # second: if that fails, try shorter token
 					token = TokenType.getMatchingElseNone(self.getCharAtOffset(offset))
 					if token is not None:
 						self.charPointer += 1
-						return Token(token, token.value, self.charPointer)
+						return Token(token, token.value, self.lineCounter)
 					else:
 						raise Exception # TODO - add some apropriate exception
 				else: # token is identifier or mnemonic token(if,else,return), and cannot be token like <, ==, && etc\
 					token = TokenType.getMatchingElseNone(self.getSubstringToOffset(offset))
 					if token is not None:
 						self.charPointer += offset
-						return Token(token, token.value, self.charPointer)
+						return Token(token, token.value, self.lineCounter)
 					else:
-						to_return = Token(TokenType.IDENTIFIER, self.getSubstringToOffset(offset), self.charPointer + offset)
+						to_return = Token(TokenType.IDENTIFIER, self.getSubstringToOffset(offset), self.lineCounter)
 						self.charPointer += offset
 						return to_return
 
