@@ -1,6 +1,6 @@
 Traceback (most recent call last):
-  File "tester.py", line 34, in <module>
-    parser = Parser(lexer, sys.stdout)
+  File "tester.py", line 33, in <module>
+    parser = Parser(lexer, iostreamMock)
   File "/home/mariusz/workspace/tkom-interpreter/parser.py", line 315, in __init__
     statement = self.parse_statement()
   File "/home/mariusz/workspace/tkom-interpreter/parser.py", line 397, in parse_statement
@@ -10,5 +10,5 @@ Traceback (most recent call last):
   File "/home/mariusz/workspace/tkom-interpreter/lexer.py", line 86, in calc_single_token
     token = function()
   File "/home/mariusz/workspace/tkom-interpreter/lexer.py", line 131, in checkAsNumericLiteral
-    raise Exception
-Exception
+    raise LexerException(token, "Cannot resolve symbol: ")
+LexerException

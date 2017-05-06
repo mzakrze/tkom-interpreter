@@ -128,7 +128,6 @@ class Lexer:
 				while True:
 					if self.currChar() in separators:
 						token = Token(TokenType.ILLEGAL_TOKEN, ''.join(literal), self.lineCounter)
-						raise Exception
 						raise LexerException(token, "Cannot resolve symbol: ")
 					else:
 						literal.append(self.currChar())

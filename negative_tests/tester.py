@@ -33,11 +33,12 @@ for file in files:
         parser = Parser(lexer, iostreamMock)
         parser.execute_main()
         out_file = open(str(file) + "_out","w")
-        with open(str(file) + "_out", "w") as out_file:
-            out_file.write(iostreamMock.bufor)
-    # except IOError:
-	# 	print("   FAILED: files not found")
+    except IOError:
+		print("   FAILED: files not found")
     except Exception as e:
         iostreamMock.write(traceback.format_exc())
+    finally:
+        with open(str(file) + "_out", "w") as out_file:
+            out_file.write(iostreamMock.bufor)
 
 
