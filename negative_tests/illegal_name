@@ -1,0 +1,6 @@
+def main(){
+    var a: int = 9;
+    print(a + 1);
+    var 1b: string = "hello";
+    print(1b);
+}

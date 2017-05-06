@@ -1,0 +1,3 @@
+def myFun(x: int, y: int){
+    return x * x + y * y;
+}
