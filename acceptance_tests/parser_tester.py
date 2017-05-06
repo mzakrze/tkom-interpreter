@@ -43,5 +43,9 @@ for num, folder in enumerate(folders):
 				out_file.write(parser_out)
 			print("    FAILED: output differs from desired")
 			print("    output written in: " + filename)
+	except LexerException as le:
+		print(le.msg)
+	except ParserException as pe:
+		print(pe.msg)
 	except IOError:
 		print("   FAILED: files not found")

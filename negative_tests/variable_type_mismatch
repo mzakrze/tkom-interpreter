@@ -1,4 +1,6 @@
 def main(){
     var a: int = "hello";
+    //var a: int = 5;
+    //var a: int = 7; - reasignement to a variable
     print(a);
 }

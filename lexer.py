@@ -128,7 +128,7 @@ class Lexer:
 				while True:
 					if self.currChar() in separators:
 						token = Token(TokenType.ILLEGAL_TOKEN, ''.join(literal), self.lineCounter)
-						raise LexerException(token, "Cannot resolve symbol: ")
+						raise LexerException("Cannot resolve symbol: ", token, self.currentLine)
 					else:
 						literal.append(self.currChar())
 						self.incPointer()
@@ -212,41 +212,6 @@ class Lexer:
 			self.incPointer()
 		self.ommitAnyComments()
 
-	
-
 class LexerException(Exception):
-	def __init__(self, token, message, trace = None):
-		self.token = token
-		self.message = message
-		self.trace = trace
-	
-	def getLog(self, programString):
-		line_string, line_nr, offset = self.calculateLine(programString)
-		log = "Error at line " + str(line_nr) + ":\n"
-		log += line_string + "\n"
-		log += '^'.rjust(offset) + "\n"
-		log += self.message + self.token.value + "\n"
-		print("log is <" + log + ">endlog")
-		return log
-
-	def calculateLine(self, programString):
-		line_nr = 1
-		line_starts_at = 0
-		for i in range(0, self.token.pointer):
-			if programString[i] == '\n':
-				line_nr += 1
-				line_starts_at = i + 1
-		
-		line_stops_at = line_starts_at
-		while programString[line_stops_at] != '\n':
-			line_stops_at += 1
-
-		line_string = programString[line_starts_at : line_stops_at]
-		offset = 0
-		for i in range(0, len(line_string)):
-			if i + line_starts_at < self.token.pointer:
-				if str(line_string[i]) == chr(9):
-					offset += 8
-				else:
-					offset += 1
-		return (line_string, line_nr, offset)
+	def __init__(self, msg, token, line):
+		self.msg = msg + "'" + token.value + "'" + " at line: " + str(token.pointer) + "\n" + line

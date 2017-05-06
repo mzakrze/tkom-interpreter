@@ -13,9 +13,12 @@ class Expression:
         self.expression = expression
 
     def calc_expression(self, scope):
+        lineNr = -1
         stack = []
         for index in range(len(self.expression)):
             symbol = self.expression[index]
+            if isinstance(symbol, Token):
+                lineNr = symbol.pointer
             if isinstance(symbol, MoveableType):
                 stack.append(symbol)
             elif symbol.tokenType in unaryOperators:
@@ -39,6 +42,16 @@ class Expression:
                     else:
                         val = el
                     args.append(val)
+                # check  here is arguments match
+                for index in range(len(function.formal_arguments)):
+                    formal_arg = function.formal_arguments[index]
+                    actual_arg = args[-index]
+                    if formal_arg[1] == type(""):
+                        continue # everything can be casted to string
+                    if isinstance(actual_arg, Token) and formal_arg[1] != actual_arg.type:
+                        raise ParserException("Argument mismatch, got: " + str(actual_arg.type) + ", expected: " + str(formal_arg[1]) + " at line " + str(lineNr))
+                    elif formal_arg[1] != type(actual_arg):
+                        raise ParserException("Argument mismatch, got: " + str(type(actual_arg)) + ", expected: " + str(formal_arg[1]) + " at line " + str(lineNr))
                 stack.append(function.execute(args))
             elif symbol.tokenType == TokenType.TRUE:
                 symbol.value = True
@@ -48,8 +61,9 @@ class Expression:
                 stack.append(symbol)
             elif symbol.tokenType in literals or symbol.tokenType == TokenType.IDENTIFIER:
                 stack.append(symbol)
-
         to_Ret =  stack.pop()
+        if stack:
+            raise ParserException("Error calculating expression at line: " + str(lineNr))
         if isinstance(to_Ret, Token):
             if to_Ret.tokenType == TokenType.IDENTIFIER:
                 return scope.get_value_by_name(to_Ret.value)
@@ -60,7 +74,8 @@ class Expression:
 
     def calcUnaryOp(self,scope, symbol, token):
         if symbol.tokenType == TokenType.EXCL_MARK:
-            return not token
+            to_return = not token
+            return to_return
 
     def calcBinaryOp(self, scope, tokenB, symbol, tokenA):
         # both tokenB and tokenA can be: TokenType, int, str, double, bool, later moveable, position
@@ -125,8 +140,6 @@ class Function:
         self.body = body
 
     def execute(self, actual_arguments):
-        if len(actual_arguments) != len(self.formal_arguments):
-            raise ParserException("Nr o argument is incorrects. Expected: " + str(len(self.formal_arguments)) + ", got: " + str(len(actual_arguments)))
         scope = Scope()
         for index, value in enumerate(actual_arguments[::-1]):
             name = self.formal_arguments[index][0]
@@ -239,8 +252,10 @@ class IfStatement:
     def execute(self, scope):
         if self.condition.calc_expression(scope):
             return self.true_body.execute(scope)
-        else:
+        elif self.false_body is not None:
             return self.false_body.execute(scope)
+        else:
+            return (None, None)
 
 class WhileStatement:
     def __init__(self, condition, body):
@@ -266,6 +281,8 @@ class VarDefinition:
         if scope.is_var_defined_in_head_layer(self.name):
             raise ParserException("Reassignment to a variable")
         val = self.expression.calc_expression(scope)
+        if self.var_type != type(val):
+            raise ParserException("Variable type mismatch for variable: " + self.name)
         if self.var_type == "moveable":
             scope.add_variable(self.name, MoveableType, val)
         else:
@@ -335,10 +352,29 @@ class Parser:
                 can_expect_comma = True # at least one arg given, therefore next argument(name : type) will begin with ','
                 name = token.value
                 self.consume_token(token_facade.next(), TokenType.COLON)
-                value_type = token_facade.next().value
+                value_type = self.mapStringToType(token_facade.next().value)
+                if value_type is None:
+                    raise ParserException("Cannot resolve: ", token)
                 arguments.append((name, value_type))
         return arguments
     
+    def mapStringToType(self, asString):
+        if asString == "int":
+            return type(0)
+        elif asString == "moveable":
+            return type(MoveableType((0,0,0,0,0,0)))
+        elif asString == "double":
+            return type(0.0)
+        elif asString == "boolean":
+            return type(True)
+        elif asString == "string":
+            return type("")
+        elif asString == "position":
+            return type((0,0))
+        else:
+            print("mapStringToType failed: " + asString)
+            return None # TODO w miejscu wywolania mapStringToType jesli zwrocilo None - rzucic wyjatek
+
     def parse_return_type(self):
         token = token_facade.next()
         if token.tokenType == TokenType.LEFT_BRACET:
@@ -358,7 +394,7 @@ class Parser:
             while True:
                 body.append(self.parse_statement())
                 if token_facade.next().tokenType == TokenType.RIGHT_BRACET:
-                    return BlockStatement(body) # add some flag, because not every block means new scope
+                    return BlockStatement(body) # TODO add some flag, because not every block means new scope
                 else:
                     token_facade.previous()
         elif token.tokenType == TokenType.IF:
@@ -397,7 +433,7 @@ class Parser:
             name = token_facade.next().value
             token = token_facade.next()
             self.consume_token(token, TokenType.COLON)
-            var_type = token_facade.next().value # TODO - jakies mapowanie na typ, nei na str przechowujacy typ
+            var_type = self.mapStringToType(token_facade.next().value)
             token = token_facade.next()
             if token.tokenType == TokenType.EQ:
                 expression = self.parse_expression()
@@ -411,8 +447,10 @@ class Parser:
         stack = []
         out = []
         open_paranths = 0
+        lineNr = -1
         while True:
             token = token_facade.next()
+            lineNr = token.pointer
             if (not token) or token.tokenType == TokenType.SEMICOLON:
                 break
             elif token.tokenType == TokenType.LEFT_SQ_BRACKET:
@@ -468,6 +506,8 @@ class Parser:
                     out.append(stack.pop())
         while stack:
             out.append(stack.pop())
+        if open_paranths != 0:
+            raise ParserException("Error parsing expression at: " + str(lineNr))
         return out
 
     def parse_statement_block(self):
@@ -516,6 +556,8 @@ class Parser:
             if function.name == "main":
                 args = []
                 function.execute(args)
+                return
+        raise ParserException("No function main found")
 
 class ParserException(Exception):
     def __init__(self, msg):
@@ -528,17 +570,15 @@ class PredefinedPrintFunction(Function):
         self.formal_arguments = [("arg", type(""))]
         self.return__type = None
 
-    def execute(self, arguments):
+    def execute(self, arguments): # TODO sprawdzanie argumentow w miejscu wywolywanaia
         arg =  arguments[0]
-        if arg is None:
-            raise Exception
         self.output_stream.write(str(arg) + "\n")
         return None
 
 class PredefinedOnCollisionFunctionHandler(Function):
     def __init__(self):
         self.name = "moveable.setOnCollision"
-        self.formal_arguments = [("mov1", MoveableType), ("mov2", MoveableType), ("function", type(""))]
+        self.formal_arguments = [("mov1", type("")), ("mov2", type("")), ("function", type(""))]
         self.return_type = None
 
     def execute(self, arguments):
@@ -589,6 +629,7 @@ class SingletonScope:
                 function = roc[2]
                 if mov1.posX != mov2.posX or mov1.posY != mov2.posY:
                     continue
+                # TODO - here check if arguments match
                 function.execute([mov1, mov2, [mov1.posX, mov1.posY], time][::-1])
         self.stack[name] = new_value        
     

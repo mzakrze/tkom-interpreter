@@ -35,7 +35,11 @@ for file in files:
         out_file = open(str(file) + "_out","w")
     except IOError:
 		print("   FAILED: files not found")
-    except Exception as e:
+    except LexerException as le:
+        iostreamMock.write(le.msg)
+    except ParserException as pe:
+        iostreamMock.write(pe.msg)
+    except Exception:
         iostreamMock.write(traceback.format_exc())
     finally:
         with open(str(file) + "_out", "w") as out_file:

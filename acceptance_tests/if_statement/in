@@ -1,6 +1,9 @@
 def main(){
-    
     if(retTrue()){
+        print("true ");
+    }
+
+    if(!retTrue()){
         print("true ");
     }
 

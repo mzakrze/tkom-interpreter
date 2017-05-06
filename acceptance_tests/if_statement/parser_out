@@ -1,6 +1,7 @@
 returning true 
 true 
 returning true 
+returning true 
 a && retTrue() 
 returning true 
 a || retTrue() 
