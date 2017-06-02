@@ -1,7 +1,6 @@
 from enum import Enum
 
 class TokenType(Enum):
-    #TODO - divide here which can be treated as separator and check this in separated function, use this functions instead of 'separator' in lexer.py: checkForRestLiteral
     INT = "int"
     double = "double"
     BOOLEAN = "boolean"

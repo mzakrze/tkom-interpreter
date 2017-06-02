@@ -372,8 +372,7 @@ class Parser:
         elif asString == "position":
             return type((0,0))
         else:
-            print("mapStringToType failed: " + asString)
-            return None # TODO w miejscu wywolania mapStringToType jesli zwrocilo None - rzucic wyjatek
+            return None 
 
     def parse_return_type(self):
         token = token_facade.next()
@@ -394,7 +393,7 @@ class Parser:
             while True:
                 body.append(self.parse_statement())
                 if token_facade.next().tokenType == TokenType.RIGHT_BRACET:
-                    return BlockStatement(body) # TODO add some flag, because not every block means new scope
+                    return BlockStatement(body)
                 else:
                     token_facade.previous()
         elif token.tokenType == TokenType.IF:
@@ -409,12 +408,11 @@ class Parser:
             else:
                 token_facade.previous()
                 return IfStatement(condition, true_body)
-        elif token.tokenType == TokenType.WHILE: # TODO ogolnie if i while maja troche wspolnego, mozna jakos polaczyc zeby bylo mniej kodu
+        elif token.tokenType == TokenType.WHILE: 
             self.consume_token(token_facade.next(), TokenType.LEFT_PARENTH)
             condition = self.parse_expression()
             self.consume_token(token_facade.next(), TokenType.RIGHT_PARENTH)
             token = token_facade.next()
-            # TODO przepisac to, bo tragedia
             if token.tokenType == TokenType.LEFT_BRACET:
                 body = self.parse_statement_block()
                 self.consume_token(token_facade.next(), TokenType.RIGHT_BRACET)
@@ -570,7 +568,7 @@ class PredefinedPrintFunction(Function):
         self.formal_arguments = [("arg", type(""))]
         self.return__type = None
 
-    def execute(self, arguments): # TODO sprawdzanie argumentow w miejscu wywolywanaia
+    def execute(self, arguments):
         arg =  arguments[0]
         self.output_stream.write(str(arg) + "\n")
         return None
@@ -629,7 +627,6 @@ class SingletonScope:
                 function = roc[2]
                 if mov1.posX != mov2.posX or mov1.posY != mov2.posY:
                     continue
-                # TODO - here check if arguments match
                 function.execute([mov1, mov2, [mov1.posX, mov1.posY], time][::-1])
         self.stack[name] = new_value        
     

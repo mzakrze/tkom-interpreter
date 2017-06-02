@@ -1,3 +1,7 @@
+"""
+Autor: Mariusz Zakrzewski
+"""
+
 from lexer import *
 from tokens import *
 from parser import *
@@ -26,6 +30,5 @@ def main(filename):
 if __name__ == "__main__":
 	if len(sys.argv) != 2:
 		print("Invalid use. Specify input file")
-		# TODO - rozsadny komunikat jesli taki plik nie istnieje
 		sys.exit()
 	main(sys.argv[1])
