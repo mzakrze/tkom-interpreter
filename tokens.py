@@ -6,6 +6,7 @@ class TokenType(Enum):
     BOOLEAN = "boolean"
     STRING = "string"
     POSITION = "position"
+    MOVEABLE = "moveable"
     DEF = "def"
     WHILE = "while"
     IF = "if"

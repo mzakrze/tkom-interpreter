@@ -127,17 +127,28 @@ class Expression:
         elif symbol.tokenType == TokenType.EQEQ:
             result = bVal == aVal
         else:
-            raise Exception("not supported operator " + op + " for: " + str(bVal) + "and: " + str(aVal))
+            raise ParserException("not supported operator " + op + " for: " + str(bVal) + "and: " + str(aVal))
         if symbol.tokenType in (TokenType.EQ, TokenType.ADDEQ, TokenType.SUBEQ, TokenType.MULEQ, TokenType.DIVEQ):
+            self.check_types_before_assignement(scope, tokenB, result)
             scope.update_variable(tokenB.value, result)
         return result
+
+    def check_types_before_assignement(self, scope, token, result):
+        print(type(scope.get_variable_by_name(token.value)[1]))
+        if type(scope.get_variable_by_name(token.value)[1]) != type(result):
+            raise ParserException('Type mismatch for ' + token.value)
 
 class Function:
     def __init__(self,name, formal_arguments, return__type, body):
         self.name = name
         self.formal_arguments = formal_arguments
-        self.return__type = return__type
         self.body = body
+        if return__type is not None:
+            self.return_type = Token(TokenType.getMatchingElseNone(return__type), return__type, 0)
+            if self.return_type.tokenType not in (TokenType.INT, TokenType.double, TokenType.MOVEABLE, TokenType.BOOLEAN, TokenType.STRING, TokenType.POSITION):
+                raise ParserException('Undefined type ' + str(return__type) + ' in function ' + str(name))
+        else:
+            self.return_type = None
 
     def execute(self, actual_arguments):
         scope = Scope()
@@ -147,11 +158,31 @@ class Function:
             scope.add_variable(name, var_type, value)
         to_ret = None
         for statement in self.body:
-            some = statement.execute(scope)
-            value, is_returning = some
-            if is_returning:
-                return value
+            try:
+                some = statement.execute(scope)
+                value, is_returning = some
+                if is_returning:
+                    return self.map_value_to_return_type(value)
+            except:
+                raise ParserException('Error evaluating line ' + str(statement.line))
         return None
+
+    def map_value_to_return_type(self, value):
+        if self.return_type is None:
+            raise ParserException('Function ' + self.name + ' returns void')
+        if self.return_type.tokenType == TokenType.INT:
+            return int(value)
+        elif self.return_type.tokenType == TokenType.double:
+            return float(value)
+        elif self.return_type.tokenType == TokenType.STRING:
+            return str(value)
+        elif self.return_type.tokenType == TokenType.BOOLEAN:
+            return bool(value)
+        elif self.return_type.tokenType == TokenType.MOVEABLE:
+            if isinstance(value, MoveableType):
+                return value
+            else:
+                raise ParserException('Function ' + str(self.name) + ' returns moveable')
 
 class MoveableType:
     def __init__(self, val):
@@ -170,13 +201,7 @@ class Scope:
         self.stack = [{}]
         
     def is_var_defined_in_head_layer(self, name):
-        try:
-            if self.stack[-1][name] is not None:
-                return True
-            else:
-                return False
-        except:
-            return False
+        return name in self.stack[-1]
 
     def add_variable(self, name, var_type, value):
         dictt = self.stack[-1]
@@ -208,11 +233,8 @@ class Scope:
             x = SingletonScope.Instance()
             return (int ,x.get_variable_by_name(name))
         for layer in self.stack[::-1]:
-            try:
-                variable = layer[name]
-                return variable
-            except KeyError:
-                pass
+            if name in layer:
+                return layer[name]
         return None
 
     def levelUp(self):
@@ -222,9 +244,10 @@ class Scope:
         self.stack.pop()
 
 class Statement:
-    def __init__(self, expression, is_returning = False):
+    def __init__(self, expression, is_returning, line):
         self.expression = Expression(expression)
         self.is_returning = is_returning
+        self.line = line
 
     def execute(self, scope):
         return (self.expression.calc_expression(scope), self.is_returning)
@@ -294,12 +317,15 @@ class TokenFacade:
         self.lexer = lexer
         self.set_previous = False
         self.previousToken = None
+        self.currentLine = 0
 
     def next(self):
         if self.set_previous:
             self.set_previous = False
         else:
             self.previousToken = self.lexer.calc_single_token()
+        if self.previousToken is not None:
+            self.currentLine = self.previousToken.pointer
         return self.previousToken
 
     def previous(self):
@@ -378,7 +404,7 @@ class Parser:
         token = token_facade.next()
         if token.tokenType == TokenType.LEFT_BRACET:
             token_facade.previous()
-            return
+            return 
         self.consume_token(token, TokenType.COLON)
         return_type = token_facade.next().value
         return return_type
@@ -422,11 +448,11 @@ class Parser:
             return WhileStatement(condition, body)
         elif token.tokenType == TokenType.RETURN:
             statement = self.parse_expression()
-            return Statement(statement, True) 
+            return Statement(statement, True, token_facade.currentLine)
         elif token.tokenType == TokenType.IDENTIFIER:
             token_facade.previous()
             expression = self.parse_expression() # will run twice throught IDENTIFIER token, but simplifies code a lot, so its ok
-            return Statement(expression, False) 
+            return Statement(expression, False, token_facade.currentLine)
         elif token.tokenType == TokenType.VAR:
             name = token_facade.next().value
             token = token_facade.next()
@@ -439,7 +465,7 @@ class Parser:
             elif token.tokenType == TokenType.SEMICOLON:
                 return VarDefinition(name, var_type)
             else:
-                self.consume_token(token, (TokenType.SEMICOLON, TokenType.EQ)) # raise exception
+                self.consume_token(token, (TokenType.SEMICOLON, TokenType.EQ)) # will raise an exception
             
     def parse_expression(self):
         stack = []
@@ -528,7 +554,6 @@ class Parser:
             return
         if token == expected_token_type:
             return
-        raise Exception
         raise ParserException("Expected: " + str(expected_token_type) + ", is: " + str(token))
 
     def get_order(self, token_type):
@@ -537,7 +562,7 @@ class Parser:
             return -1
         if token_type in (TokenType.LESS, TokenType.EQEQ, TokenType.LESS_EQ, TokenType.GREATER, TokenType.GREATER_EQ, TokenType.EXCL_MARK): # relational
             return 0
-        elif token_type in (TokenType.PLUS,TokenType.MINUS): # plus / minus
+        elif token_type in (TokenType.PLUS,TokenType.MINUS):
             return 2
         else: # multiply , divide
             return 3
@@ -555,7 +580,7 @@ class Parser:
                 args = []
                 function.execute(args)
                 return
-        raise ParserException("No function main found")
+        raise ParserException("No main function found")
 
 class ParserException(Exception):
     def __init__(self, msg):
