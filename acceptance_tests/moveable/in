@@ -7,7 +7,7 @@ def main(){
 
     var myMoveable2: moveable = [[10,0],[-1,0],[0,0]];
     var myMoveable3: moveable = [[0,0],[1,0],[0,0]];
-    moveable.setOnCollision(myMoveable2, myMoveable3, mgFun);
+    moveable.setOnCollision(myMoveable2, myMoveable3, myFun);
 
     moveable.globalTime += 4;
     print("wait for it");

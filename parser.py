@@ -13,6 +13,7 @@ class Expression:
         self.expression = expression
 
     def calc_expression(self, scope):
+        """ shunting-yard algorithm """
         lineNr = -1
         stack = []
         for index in range(len(self.expression)):
@@ -173,7 +174,7 @@ class Function:
             raise ParserException('Function ' + self.name + ' returns void')
         if self.return_type.tokenType == TokenType.INT:
             if isinstance(value, int):
-                return float(value)
+                return int(value)
             else:
                 raise ParserException('Function ' + str(self.name) + ' returns int')
         elif self.return_type.tokenType == TokenType.double:
@@ -431,61 +432,74 @@ class Parser:
             token_facade.previous()
             return
         if token.tokenType == TokenType.LEFT_BRACET:
-            body = []
-            while True:
-                body.append(self.parse_statement())
-                if token_facade.next().tokenType == TokenType.RIGHT_BRACET:
-                    return BlockStatement(body)
-                else:
-                    token_facade.previous()
+            return self.parse_block()
         elif token.tokenType == TokenType.IF:
-            self.consume_token(token_facade.next(), TokenType.LEFT_PARENTH)
-            condition = self.parse_expression()
-            self.consume_token(token_facade.next(), TokenType.RIGHT_PARENTH)
-            true_body = self.parse_statement()
-            token = token_facade.next()
-            if token.tokenType == TokenType.ELSE:
-                false_body = self.parse_statement()
-                return IfStatement(condition, true_body, false_body, token_facade.currentLine)
-            else:
-                token_facade.previous()
-                return IfStatement(condition, true_body, None, token_facade.currentLine)
+            return self.parse_if_statement()
         elif token.tokenType == TokenType.WHILE:
-            line = token_facade.currentLine 
-            self.consume_token(token_facade.next(), TokenType.LEFT_PARENTH)
-            condition = self.parse_expression()
-            self.consume_token(token_facade.next(), TokenType.RIGHT_PARENTH)
-            token = token_facade.next()
-            if token.tokenType == TokenType.LEFT_BRACET:
-                body = self.parse_statement_block()
-                self.consume_token(token_facade.next(), TokenType.RIGHT_BRACET)
-            else:
-                token_facade.previous()
-                body = [self.parse_statement()]
-            return WhileStatement(condition, body, line)
+            return self.parse_while_statement()
         elif token.tokenType == TokenType.RETURN:
-            statement = self.parse_expression()
-            return Statement(statement, True, token_facade.currentLine)
+            return Statement(self.parse_expression(), True, token_facade.currentLine)
         elif token.tokenType == TokenType.IDENTIFIER:
             token_facade.previous()
             expression = self.parse_expression() # will run twice throught IDENTIFIER token, but simplifies code a lot, so its ok
             return Statement(expression, False, token_facade.currentLine)
         elif token.tokenType == TokenType.VAR:
-            name = token_facade.next().value
-            token = token_facade.next()
-            self.consume_token(token, TokenType.COLON)
-            var_type = self.mapStringToType(token_facade.next().value)
-            token = token_facade.next()
-            if token.tokenType == TokenType.EQ:
-                expression = self.parse_expression()
-                return VarDefinition(name, var_type, expression, token_facade.currentLine)
-            elif token.tokenType == TokenType.SEMICOLON:
-                return VarDefinition(name, var_type, None, token_facade.currentLine)
-            else:
-                self.consume_token(token, (TokenType.SEMICOLON, TokenType.EQ)) # will raise an exception
-        raise Exception
+            return self.parse_var_statement()
+        raise Exception('Error at line ' + str(token_facade.currentLine))
             
+
+    def parse_if_statement(self):
+        self.consume_token(token_facade.next(), TokenType.LEFT_PARENTH)
+        condition = self.parse_expression()
+        self.consume_token(token_facade.next(), TokenType.RIGHT_PARENTH)
+        true_body = self.parse_statement()
+        token = token_facade.next()
+        if token.tokenType == TokenType.ELSE:
+            false_body = self.parse_statement()
+            return IfStatement(condition, true_body, false_body, token_facade.currentLine)
+        else:
+            token_facade.previous()
+            return IfStatement(condition, true_body, None, token_facade.currentLine)
+    
+    def parse_while_statement(self):
+        line = token_facade.currentLine 
+        self.consume_token(token_facade.next(), TokenType.LEFT_PARENTH)
+        condition = self.parse_expression()
+        self.consume_token(token_facade.next(), TokenType.RIGHT_PARENTH)
+        token = token_facade.next()
+        if token.tokenType == TokenType.LEFT_BRACET:
+            body = self.parse_statement_block()
+            self.consume_token(token_facade.next(), TokenType.RIGHT_BRACET)
+        else:
+            token_facade.previous()
+            body = [self.parse_statement()]
+        return WhileStatement(condition, body, line)
+
+    def parse_var_statement(self):
+        name = token_facade.next().value
+        token = token_facade.next()
+        self.consume_token(token, TokenType.COLON)
+        var_type = self.mapStringToType(token_facade.next().value)
+        token = token_facade.next()
+        if token.tokenType == TokenType.EQ:
+            expression = self.parse_expression()
+            return VarDefinition(name, var_type, expression, token_facade.currentLine)
+        elif token.tokenType == TokenType.SEMICOLON:
+            return VarDefinition(name, var_type, None, token_facade.currentLine)
+        else:
+            self.consume_token(token, (TokenType.SEMICOLON, TokenType.EQ)) # will raise an exception
+
+    def parse_block(self):
+        body = []
+        while True:
+            body.append(self.parse_statement())
+            if token_facade.next().tokenType == TokenType.RIGHT_BRACET:
+                return BlockStatement(body)
+            else:
+                token_facade.previous()
+
     def parse_expression(self):
+        """ shunting-yard algorithm """
         stack = []
         out = []
         open_paranths = 0

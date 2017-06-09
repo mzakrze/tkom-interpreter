@@ -27,14 +27,14 @@ def fibonacci(n: int): int {
     else if(n == 1)
         return 1;
     else
-        return fibonacci(n - 1) + fibonacci(n - 2); // dla zapisu n-2 rozbijalo: n(identifire) i -1(identifire)
+        return fibonacci(n - 1) + fibonacci(n - 2); 
 }
 
 def fibonacci_double(n: int): double {
     if(n == 0)
-        return 0;
+        return 0.0;
     else if(n == 1)
-        return 1;
+        return 1.0;
     else
-        return fibonacci(n - 1) + fibonacci(n - 2); // dla zapisu n-2 rozbijalo: n(identifire) i -1(identifire)
+        return fibonacci_double(n - 1) + fibonacci_double(n - 2); 
 }
