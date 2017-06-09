@@ -26,6 +26,8 @@ def main(filename):
 		print(le.msg)
 	except ParserException as pe:
 		print(pe.msg)
+	except Exception as e:
+		print(e)
 
 if __name__ == "__main__":
 	if len(sys.argv) != 2:

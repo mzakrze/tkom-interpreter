@@ -1,0 +1,7 @@
+def main(){
+    var a: double = get_string();
+}
+
+def get_string(): string{
+    return "3.14";
+}

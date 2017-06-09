@@ -61,7 +61,7 @@ class Expression:
                 stack.append(symbol)
             elif symbol.tokenType in literals or symbol.tokenType == TokenType.IDENTIFIER:
                 stack.append(symbol)
-        to_Ret =  stack.pop()
+        to_Ret = stack.pop()
         if stack:
             raise ParserException("Error calculating expression at line: " + str(lineNr))
         if isinstance(to_Ret, Token):
@@ -134,7 +134,6 @@ class Expression:
         return result
 
     def check_types_before_assignement(self, scope, token, result):
-        print(type(scope.get_variable_by_name(token.value)[1]))
         if type(scope.get_variable_by_name(token.value)[1]) != type(result):
             raise ParserException('Type mismatch for ' + token.value)
 
@@ -163,7 +162,9 @@ class Function:
                 value, is_returning = some
                 if is_returning:
                     return self.map_value_to_return_type(value)
-            except:
+            except ParserException as pe:
+                raise pe
+            except Exception:
                 raise ParserException('Error evaluating line ' + str(statement.line))
         return None
 
@@ -171,13 +172,25 @@ class Function:
         if self.return_type is None:
             raise ParserException('Function ' + self.name + ' returns void')
         if self.return_type.tokenType == TokenType.INT:
-            return int(value)
+            if isinstance(value, int):
+                return float(value)
+            else:
+                raise ParserException('Function ' + str(self.name) + ' returns int')
         elif self.return_type.tokenType == TokenType.double:
-            return float(value)
+            if isinstance(value, float) or isinstance(value, int):
+                return float(value)
+            else:
+                raise ParserException('Function ' + str(self.name) + ' returns double')
         elif self.return_type.tokenType == TokenType.STRING:
-            return str(value)
+            if isinstance(value, str):
+                return value
+            else:
+                raise ParserException('Function ' + str(self.name) + ' returns string')
         elif self.return_type.tokenType == TokenType.BOOLEAN:
-            return bool(value)
+            if isinstance(value, bool) or isinstance(value, int) or isinstance(value, float):
+                return bool(value)
+            else:
+                raise ParserException('Function ' + str(self.name) + ' returns boolean')
         elif self.return_type.tokenType == TokenType.MOVEABLE:
             if isinstance(value, MoveableType):
                 return value
@@ -186,15 +199,15 @@ class Function:
 
 class MoveableType:
     def __init__(self, val):
-        self.accX = val[5]
-        self.accY = val[4]
-        self.speedX = val[3]
-        self.speedY = val[2]
-        self.posX = val[1]
-        self.posY = val[0]
+        self.accY = val[5]
+        self.accX = val[4]
+        self.speedY = val[3]
+        self.speedX = val[2]
+        self.posY = val[1]
+        self.posX = val[0]
 
     def __str__(self):
-        return "[[" + str(self.accX) + "," + str(self.accY) + "],[" + str(self.speedX) + "," + str(self.speedY) + "],[" + str(self.posX) + "," + str(self.posY) + "]]"
+        return "[[" + str(self.posX) + "," + str(self.posY) + "],[" + str(self.speedX) + "," + str(self.speedY) + "],[" + str(self.accX) + "," + str(self.accY) + "]]"
 
 class Scope:
     def __init__(self):
@@ -215,7 +228,7 @@ class Scope:
             x = SingletonScope.Instance()
             x.update_variable(name, value)
             return
-        for layer in self.stack:
+        for layer in self.stack[::-1]:
             if name in layer:
                 var_type, whatever = layer[name]
                 layer[name] = (var_type, value)
@@ -267,10 +280,11 @@ class BlockStatement:
         return (None, False)
 
 class IfStatement:
-    def __init__(self, condition, true_body, false_body = None):
+    def __init__(self, condition, true_body, false_body, line):
         self.condition = Expression(condition)
         self.true_body = true_body
         self.false_body = false_body
+        self.line = line
 
     def execute(self, scope):
         if self.condition.calc_expression(scope):
@@ -281,9 +295,10 @@ class IfStatement:
             return (None, None)
 
 class WhileStatement:
-    def __init__(self, condition, body):
+    def __init__(self, condition, body, line):
         self.condition = Expression(condition)
         self.body = body
+        self.line = line
 
     def execute(self, scope):
         while self.condition.calc_expression(scope):
@@ -294,11 +309,12 @@ class WhileStatement:
         return (None, False)
 
 class VarDefinition:
-    def __init__(self, name, var_type, expression = None):
+    def __init__(self, name, var_type, expression, line):
         self.name = name
         self.var_type = var_type
         self.expression = Expression(expression)
         self.is_returning = False
+        self.line = line
     
     def execute(self, scope):
         if scope.is_var_defined_in_head_layer(self.name):
@@ -430,11 +446,12 @@ class Parser:
             token = token_facade.next()
             if token.tokenType == TokenType.ELSE:
                 false_body = self.parse_statement()
-                return IfStatement(condition, true_body, false_body)
+                return IfStatement(condition, true_body, false_body, token_facade.currentLine)
             else:
                 token_facade.previous()
-                return IfStatement(condition, true_body)
-        elif token.tokenType == TokenType.WHILE: 
+                return IfStatement(condition, true_body, None, token_facade.currentLine)
+        elif token.tokenType == TokenType.WHILE:
+            line = token_facade.currentLine 
             self.consume_token(token_facade.next(), TokenType.LEFT_PARENTH)
             condition = self.parse_expression()
             self.consume_token(token_facade.next(), TokenType.RIGHT_PARENTH)
@@ -445,7 +462,7 @@ class Parser:
             else:
                 token_facade.previous()
                 body = [self.parse_statement()]
-            return WhileStatement(condition, body)
+            return WhileStatement(condition, body, line)
         elif token.tokenType == TokenType.RETURN:
             statement = self.parse_expression()
             return Statement(statement, True, token_facade.currentLine)
@@ -461,11 +478,12 @@ class Parser:
             token = token_facade.next()
             if token.tokenType == TokenType.EQ:
                 expression = self.parse_expression()
-                return VarDefinition(name, var_type, expression)
+                return VarDefinition(name, var_type, expression, token_facade.currentLine)
             elif token.tokenType == TokenType.SEMICOLON:
-                return VarDefinition(name, var_type)
+                return VarDefinition(name, var_type, None, token_facade.currentLine)
             else:
                 self.consume_token(token, (TokenType.SEMICOLON, TokenType.EQ)) # will raise an exception
+        raise Exception
             
     def parse_expression(self):
         stack = []
@@ -640,7 +658,7 @@ class SingletonScope:
                 yield (i,j)
     def update_variable(self, name, new_value):
         pairs = ((i, j) for i in self.moveable_objects for j in self.moveable_objects if i != j)
-        for time in range(self.stack[name], new_value + 1):
+        for time in range(self.stack[name], new_value):
             for m in self.moveable_objects:
                 m[1].posX += m[1].speedX
                 m[1].speedX += m[1].accX

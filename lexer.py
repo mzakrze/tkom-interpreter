@@ -6,7 +6,10 @@ class Lexer:
 		self.openFile = openFile
 		self.charPointer = 0
 		self.decLine = False
-		self.currentLine = openFile.next()
+		try:
+			self.currentLine = self.openFile.next() + "\n"
+		except StopIteration:
+			raise Exception('No function main found')
 		self.previousLine = ""
 		self.lineCounter = 1
 		self.is_eof = False
@@ -85,7 +88,12 @@ class Lexer:
 		for function in literalsToCheck:
 			token = function()
 			if token is not None:
-				return token
+				if token.tokenType == TokenType.MOVEABLE and self.currChar() == ".":
+					self.calc_single_token() # eat "."
+					next_token = self.calc_single_token()
+					return Token(TokenType.IDENTIFIER, token.value + "." + next_token.value, next_token.pointer)
+				else:
+					return token
 		return None
 
 	def checkAsNumericLiteral(self):
@@ -172,6 +180,11 @@ class Lexer:
 						self.charPointer += offset
 						return Token(token, token.value, self.lineCounter)
 					else:
+						if self.currChar() == ".":
+							self.charPointer += offset
+							self.calc_single_token() #consumes dot
+							next_token = self.calc_single_token()
+							to_return = Token(TokenType.IDENTIFIER, self.getSubstringToOffset(offset) + "." + next_token.value, self.lineCounter)	
 						to_return = Token(TokenType.IDENTIFIER, self.getSubstringToOffset(offset), self.lineCounter)
 						self.charPointer += offset
 						return to_return

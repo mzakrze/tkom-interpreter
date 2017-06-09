@@ -9,6 +9,16 @@ def main(){
     print(fibonacci(7) + " ");
     print(fibonacci(8) + " ");
     print(fibonacci(9) + " ");
+
+    var a: int = 2;
+    print(a);
+    {
+        print(a);
+        var a: int = 4;
+        a += 5;
+        print(a);
+    }
+    print(a);
 }
 
 def fibonacci(n: int): int {
